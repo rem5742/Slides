@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="index.css">
+	<script src="firebase.js"></script>
+	<style type="text/css">
+		#nav
+		{
+			text-align: center;
+		}
+		#nav span
+		{
+			padding: 5px 15px;
+			border-radius: 4px;
+			background: lightgray;
+			color: #444;
+			text-shadow: 0 0 4px #aaa;
+			margin-right: 7px;
+			cursor: pointer;
+			box-shadow: 1px 1px 4px #888;
+		}
+		#nav span:active
+		{
+			box-shadow: none;
+		}
+		#nav span.selected
+		{
+			background: #aaa;
+			box-shadow: 0 0 1px;
+		}
+	</style>
+	<script type="text/javascript">
+		var _aux;
+		window.onload = () => {
+			// Initialize Firebase
+			var config = {
+				apiKey: "AIzaSyCrOrAbZT9iCs39Y-BBimqVUNMAHBvRa7A",
+				authDomain: "shawer-5fc3a.firebaseapp.com",
+				databaseURL: "https://shawer-5fc3a.firebaseio.com",
+				projectId: "shawer-5fc3a",
+				storageBucket: "shawer-5fc3a.appspot.com",
+				messagingSenderId: "352213524887"
+			};
+			firebase.initializeApp(config);
+
+			var nav = document.getElementById('nav');
+			var dbRef = firebase.database().ref();
+
+			nav.addEventListener('click', (evt) => {
+				dbRef.child('currentSlide').set(evt.target.code);
+			});
+
+			function updateSelected()
+			{
+				dbRef.child('currentSlide').on('value', (snap, key) => {
+					nav.querySelectorAll('span.selected').forEach((item, index) => {
+						item.classList.remove('selected');
+					});
+					console.log( key );
+					if ( _aux = nav.querySelector('#_slide_' + snap.val().substr(-2, 1) + '_' + snap.val().replace(/[^a-zA-Z]/g, "")) )
+					{
+						_aux.classList.add('selected');
+					}
+				});
+			}
+
+			dbRef.child('slides').once('value').then(snap => {
+				var array = [];
+				var span = null;
+				Object.keys(data = (snap.val() || [])).map(key => {
+					span = document.createElement('span');
+					span.innerText = key;
+					span.id = '_slide_' + key + '_' + data[key].replace(/[^a-zA-Z]/g, "");
+					span.code = data[key];
+					span.key = key;
+					nav.appendChild(span);
+					array[Number(key)] = data[key];
+					return null;
+				});
+				updateSelected();
+			});
+		}
+	</script>
+<script>
+</script>
+</head>
+<body>
+	<nav id="nav"></nav>
+</body>
+</html>
