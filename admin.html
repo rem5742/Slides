@@ -5,6 +5,10 @@
 	<link rel="stylesheet" type="text/css" href="index.css">
 	<script src="firebase.js"></script>
 	<style type="text/css">
+		body
+		{
+			text-align: center;
+		}
 		#nav
 		{
 			text-align: center;
@@ -43,6 +47,7 @@
 				messagingSenderId: "352213524887"
 			};
 			firebase.initializeApp(config);
+			var storage = firebase.storage();
 
 			var nav = document.getElementById('nav');
 			var dbRef = firebase.database().ref();
@@ -65,6 +70,13 @@
 				});
 			}
 
+			dbRef.child('currentSlide').on('value', snap => {
+				storage.ref().child(snap.val() + '.jpg').getDownloadURL().then(function(url) {
+					var img = document.getElementById('slide');
+					img.src = url;
+				}).catch(function(error) {});
+			});
+
 			dbRef.child('slides').once('value').then(snap => {
 				var array = [];
 				var span = null;
@@ -86,6 +98,7 @@
 </script>
 </head>
 <body>
+	<img id="slide" style="width: 800px;margin: 10px;" src="">
 	<nav id="nav"></nav>
 </body>
 </html>
